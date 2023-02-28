@@ -1,5 +1,5 @@
 {
-    "name": "dennis/php-cli-spinners",
+    "name": "diversen/php-cli-spinners",
     "type": "library",
     "description": "Show a cli spinner while executing a callback",
     "homepage": "http://github.com/diversen/php-cli-spinners",
