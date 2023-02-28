@@ -13,10 +13,10 @@ $res = $spinner->callback(function () {
 
 echo $res . "\n";
 
-// Run this command to see the output:
+// This shows the spinner and the output of the callback function:
 // 
-// php examples/redirected_output.php  > test.txt
+// php examples/redirected_output.php
 // 
-// The output will be: 42
-// 
-// The spinner will not be displayed.I have not found a way to make it work.
+// When redirecting the output to a file, the spinner will not be displayed
+//
+// php examples/redirected_output.php > /tmp/test.txt
