@@ -1,0 +1,22 @@
+{
+    "name": "dennis/php-cli-spinners",
+    "type": "library",
+    "description": "Show a cli spinner while executing a callback",
+    "homepage": "http://github.com/diversen/php-cli-spinners",
+    "keywords": ["cli", "spinner", "callback"],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Diversen\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Dennis Iversen",
+            "email": "dennis.iversen@gmail.com",
+            "homepage": "https://github.com/diversen",
+            "role": "Developer"
+        }
+    ],
+    "require": {}
+}
