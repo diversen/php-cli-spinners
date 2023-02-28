@@ -12,7 +12,7 @@ https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/
 
 The constructor just takes take the name of the spinner.
 
-Is you use a normal php install you might not see the spinner, 
+Is you use a normal Windows PHP install you might not see the spinner, 
 as the library uses the [pcntl](https://www.php.net/manual/en/book.pcntl.php) extension.
 
 ## Installation
