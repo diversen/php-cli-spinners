@@ -56,19 +56,28 @@ class Spinner
 
     public function callback(callable $callback)
     {
-        $pid = pcntl_fork();
-        if ($pid == -1) {
-            throw new Exception('Could not fork process');
-        } else if ($pid) {
-            // Parent
-            $res = $callback();
-            $this->interrupt();
-            posix_kill($pid, SIGTERM);
-            return $res;
+
+        if (posix_isatty(STDOUT)) {
+
+            // Output is being displayed on the screen
+            // Only start spinner if output is not redirected to a file
+            $pid = pcntl_fork();
+            if ($pid == -1) {
+                throw new Exception('Could not fork process');
+            } else if ($pid) {
+                // Parent
+                $res = $callback();
+                $this->interrupt();
+                posix_kill($pid, SIGTERM);
+                return $res;
+            } else {
+                // Child
+                $this->start();
+                exit(0);
+            }
         } else {
-            // Child
-            $this->start();
-            exit(0);
+            $res = $callback();
+            return $res;
         }
     }
 }
