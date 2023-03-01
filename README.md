@@ -4,21 +4,17 @@ Simple PHP library for displaying spinners in the terminal while running a callb
 
 You will need to have the [pcntl](https://www.php.net/manual/en/book.pcntl.php) extension installed.
 
-It uses this nice collection of spinners:
+The library uses this collection of spinners:
 
 https://github.com/sindresorhus/cli-spinners
 
-They can be seen in action here:
+The spinners can be seen in action here:
 
 https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/
 
-The constructor just takes take the name of the spinner.
+If you don't have the `pcntl` extension installed, you can still use the library, but you will not see the spinner.
 
-If you use a normal Windows PHP install you might not see the spinner, 
-as the library uses the [pcntl](https://www.php.net/manual/en/book.pcntl.php) extension
-for displaying the spinner.
-
-If you use WSL on windows you should be fine.
+On windows use WSL and you will be fine.
 
 ## Installation
 
