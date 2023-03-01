@@ -14,6 +14,18 @@ class Spinner
 
     public function __construct(string $spinner = 'dots')
     {
+        if (!extension_loaded('pcntl')) {
+            throw new Exception('pcntl extension must be enabled. Use WSL on windows');
+        }
+
+        // Keyboard interrupts. If these are not handled
+        // the process will terminate when pressing e.g. ctrl-c
+        pcntl_signal(SIGINT, function () {});
+        pcntl_signal(SIGTSTP, function () {});
+        pcntl_signal(SIGQUIT, function () {});
+        pcntl_async_signals(true);
+        
+
         $spinner_json = file_get_contents(__DIR__ . '/spinners.json');
         $spinner_ary = json_decode($spinner_json, true);
         $this->spinner = $spinner_ary[$spinner];
@@ -54,13 +66,6 @@ class Spinner
             $res = $callback();
             return $res;
         }
-
-        // Keyboard interrupts. If these are not handled
-        // the process will terminate when pressing e.g. ctrl-c
-        pcntl_signal(SIGINT, function () {});
-        pcntl_signal(SIGTSTP, function () {});
-        pcntl_signal(SIGQUIT, function () {});
-        pcntl_async_signals(true);
 
         if (posix_isatty(STDOUT) ) {
 
