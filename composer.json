@@ -18,9 +18,6 @@
             "role": "Developer"
         }
     ],
-    "require": {
-        "ext-pcntl": "*"
-    },
     "require-dev": {
         "phpunit/phpunit": "^10.0"
     }
