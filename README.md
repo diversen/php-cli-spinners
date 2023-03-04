@@ -10,7 +10,9 @@ The spinners can be seen [in action here](https://jsfiddle.net/sindresorhus/2eLt
 
 If you don't have the `pcntl` extension installed, you can still use the library, but you will not see the spinner.
 
-On windows use WSL and you will be fine.
+On windows use WSL. There may be some trouble using UTF-8 characters in the terminal on WSL.
+
+In this case you can use the `simpleDots` or `simpleDotsScrolling` spinner.
 
 ## Installation
 

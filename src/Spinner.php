@@ -58,11 +58,6 @@ class Spinner
             return $res;
         }
 
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $res = $callback();
-            return $res;
-        }
-
 
         // Keyboard interrupts. If these are not handled
         // the process will terminate when pressing e.g. ctrl-c
