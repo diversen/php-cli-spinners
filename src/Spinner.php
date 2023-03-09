@@ -10,6 +10,7 @@ class Spinner
 {
 
     private int $child_pid = 0;
+    private bool $use_keyboard_interrupts = true;
     private bool $running = true;
     private array $spinner = [];
     private $blink_off = "\e[?25l";
@@ -17,8 +18,9 @@ class Spinner
     private $clear_line = "\33[2K\r";
     private $position_zero = "\r";
 
-    public function __construct(string $spinner = 'dots')
+    public function __construct(string $spinner = 'dots', bool $use_keyboard_interrupts = true)
     {
+        $this->use_keyboard_interrupts = $use_keyboard_interrupts;
         $spinner_json = file_get_contents(__DIR__ . '/spinners.json');
         $spinner_ary = json_decode($spinner_json, true);
         $this->spinner = $spinner_ary[$spinner];
@@ -81,7 +83,9 @@ class Spinner
         // Only start spinner if output is not redirected to a file
         if (posix_isatty(STDOUT)) {
 
-            $this->keyboardInterrupts();
+            if ($this->use_keyboard_interrupts) {
+                $this->keyboardInterrupts();
+            }
 
             $child_pid = pcntl_fork();
             if ($child_pid == -1) {
