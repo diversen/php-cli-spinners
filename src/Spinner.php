@@ -9,6 +9,7 @@ use \Exception;
 class Spinner
 {
 
+    private ?int $child_pid;
     private bool $running = true;
     private array $spinner = [];
     private $blink_off = "\e[?25l";
@@ -50,6 +51,22 @@ class Spinner
         echo $this->blink_on;
     }
 
+    private function keyboardInterrupts()
+    {
+        // Keyboard interrupts. E.g. ctrl-c
+        // Exit parent process 
+        $keyboard_interrupts = function ($signo) {
+            $this->interrupt();
+            posix_kill($this->child_pid, SIGTERM);
+            exit(0);
+        };
+
+        pcntl_signal(SIGINT, $keyboard_interrupts);
+        pcntl_signal(SIGTSTP, $keyboard_interrupts);
+        pcntl_signal(SIGQUIT, $keyboard_interrupts);
+        pcntl_async_signals(true);
+    }
+
     public function callback(callable $callback)
     {
 
@@ -58,29 +75,25 @@ class Spinner
             return $res;
         }
 
-
-        // Keyboard interrupts. If these are not handled
-        // the process will terminate when pressing e.g. ctrl-c
-        $interrupt = function ($signo) {};
-        pcntl_signal(SIGINT, $interrupt);
-        pcntl_signal(SIGTSTP, $interrupt);
-        pcntl_signal(SIGQUIT, $interrupt);
-        pcntl_async_signals(true);
-
+        // Output is being displayed on the screen
+        // Only start spinner if output is not redirected to a file
         if (posix_isatty(STDOUT)) {
 
-            // Output is being displayed on the screen
-            // Only start spinner if output is not redirected to a file
-            $pid = pcntl_fork();
-            if ($pid == -1) {
+            $this->keyboardInterrupts();
+
+            
+            $child_pid = pcntl_fork();
+            if ($child_pid == -1) {
                 throw new Exception('Could not fork process');
-            } else if ($pid) {
+            } else if ($child_pid) {
                 // Parent process
+                $this->child_pid = $child_pid;
                 $res = $callback();
                 $this->interrupt();
-                posix_kill($pid, SIGTERM);
+                posix_kill($this->child_pid, SIGTERM);
                 return $res;
             } else {
+                // Child process
                 $this->start();
             }
         } else {
