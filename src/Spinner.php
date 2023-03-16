@@ -9,7 +9,7 @@ use \Exception;
 class Spinner
 {
 
-    private int $child_pid = 0;
+    private int $pid = 0;
     private bool $use_keyboard_interrupts = true;
     private bool $running = true;
     private array $spinner = [];
@@ -59,9 +59,7 @@ class Spinner
         // Exit parent process 
         $keyboard_interrupts = function ($signo) {
             $this->interrupt();
-            if ($this->child_pid) {
-                posix_kill($this->child_pid, SIGTERM);
-            }
+            posix_kill($this->pid, SIGTERM);
             exit($signo);
         };
 
@@ -87,15 +85,15 @@ class Spinner
                 $this->keyboardInterrupts();
             }
 
-            $child_pid = pcntl_fork();
-            if ($child_pid == -1) {
+            $pid = pcntl_fork();
+            if ($pid == -1) {
                 throw new Exception('Could not fork process');
-            } else if ($child_pid) {
+            } else if ($pid) {
                 // Parent process
-                $this->child_pid = $child_pid;
+                $this->pid = $pid;
                 $res = $callback();
                 $this->interrupt();
-                posix_kill($this->child_pid, SIGTERM);
+                posix_kill($this->pid, SIGTERM);
                 return $res;
             } else {
                 // Child process
