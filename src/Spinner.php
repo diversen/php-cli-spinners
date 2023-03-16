@@ -9,7 +9,7 @@ use \Exception;
 class Spinner
 {
 
-    private int $pid = 0;
+    private int $child_pid = 0;
     private bool $use_keyboard_interrupts = true;
     private bool $running = true;
     private array $spinner = [];
@@ -63,10 +63,12 @@ class Spinner
     private function keyboardInterrupts()
     {
         // Keyboard interrupts. E.g. ctrl-c
-        // Exit parent process. And the child process
+        // First exit child process using posix_kill
+        // Then exit parent process using exit
+
         $keyboard_interrupts = function ($signo) {
             $this->interrupt();
-            posix_kill($this->pid, SIGTERM);
+            posix_kill($this->child_pid, SIGTERM);
             exit($signo);
         };
 
@@ -84,33 +86,32 @@ class Spinner
             return $res;
         }
 
-        // Output is being displayed on the screen
-        // Only start spinner if output is not redirected to a file
-        if (!in_array(STDOUT, $this->ignore_streams)) $this->runCallback($callback);
-        if (!in_array(STDERR, $this->ignore_streams)) $this->runCallBack($callback);
+        // Use setting to determine which streams to ignore
+        if (!in_array(STDOUT, $this->ignore_streams)) return $this->runCallback($callback);
+        if (!in_array(STDERR, $this->ignore_streams)) return $this->runCallBack($callback);
         if (!in_array(STDIN, $this->ignore_streams)) {
-            $this->runCallback($callback);
+            return $this->runCallback($callback);
         } else {
             $res = $callback();
             return $res;
         }
     }
 
-    public function runCallBack(callable $callback)
+    private function runCallBack(callable $callback)
     {
         if ($this->use_keyboard_interrupts) {
             $this->keyboardInterrupts();
         }
 
-        $pid = pcntl_fork();
-        if ($pid == -1) {
+        $child_pid = pcntl_fork();
+        if ($child_pid == -1) {
             throw new Exception('Could not fork process');
-        } else if ($pid) {
+        } else if ($child_pid) {
             // Parent process
-            $this->pid = $pid;
+            $this->child_pid = $child_pid;
             $res = $callback();
             $this->interrupt();
-            posix_kill($this->pid, SIGTERM);
+            posix_kill($this->child_pid, SIGTERM);
             return $res;
         } else {
             // Child process
