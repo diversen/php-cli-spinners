@@ -41,7 +41,7 @@ class Spinner
         }
     }
 
-    private function start($callback = null)
+    private function start()
     {
         echo $this->blink_off;
         while (true) {
@@ -63,7 +63,7 @@ class Spinner
     private function keyboardInterrupts()
     {
         // Keyboard interrupts. E.g. ctrl-c
-        // Exit parent process 
+        // Exit parent process. And the child process
         $keyboard_interrupts = function ($signo) {
             $this->interrupt();
             posix_kill($this->pid, SIGTERM);
@@ -88,7 +88,6 @@ class Spinner
         // Only start spinner if output is not redirected to a file
         if (!in_array(STDOUT, $this->ignore_streams)) $this->runCallback($callback);
         if (!in_array(STDERR, $this->ignore_streams)) $this->runCallBack($callback);
-
         if (!in_array(STDIN, $this->ignore_streams)) {
             $this->runCallback($callback);
         } else {
