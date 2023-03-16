@@ -23,8 +23,10 @@ class Spinner
     public function __construct(
         string $spinner = 'dots',
         bool $use_keyboard_interrupts = true,
-        array $ignore = [STDERR, STDIN]
+        array $ignore_streams = []
     ) {
+
+        $this->ignore_streams = $ignore_streams;
         $this->use_keyboard_interrupts = $use_keyboard_interrupts;
         $spinner_json = file_get_contents(__DIR__ . '/spinners.json');
         $spinner_ary = json_decode($spinner_json, true);
