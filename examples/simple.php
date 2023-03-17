@@ -6,11 +6,10 @@ use Diversen\Spinner;
 
 $spinner = new Spinner(spinner: 'material');
 $res = $spinner->callback(function () {
-    for($i = 0; $i < 100; $i++) {
+    for($i = 0; $i < 2; $i++) {
         echo "Doing something important: " . $i . "\n";
         sleep(1);
     }
-    sleep(2);
     return 42;
 });
 

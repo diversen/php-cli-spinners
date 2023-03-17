@@ -11,12 +11,11 @@ class Spinner
 
     private int $child_pid = 0;
     private bool $use_keyboard_interrupts = true;
-    private bool $running = true;
     private array $spinner = [];
     private $blink_off = "\e[?25l";
     private $blink_on = "\e[?25h";
     private $clear_line = "\33[2K\r";
-    private $position_zero = "\r";
+    private $return_to_left = "\r";
 
     public function __construct(string $spinner = 'simpleDots', bool $use_keyboard_interrupts = true)
     {
@@ -26,29 +25,19 @@ class Spinner
         $this->spinner = $spinner_ary[$spinner];
     }
 
-    private function display()
-    {
-        foreach ($this->spinner["frames"] as $frame) {
-            echo $frame . $this->position_zero;
-            usleep($this->spinner["interval"] * 1000);
-        }
-    }
-
     private function start()
     {
         echo $this->blink_off;
         while (true) {
-            if (!$this->running) {
-                break;
+            foreach ($this->spinner["frames"] as $frame) {
+                echo $frame . $this->return_to_left;
+                usleep($this->spinner["interval"] * 1000);
             }
-            $this->display();
         }
     }
 
-    private function interrupt()
+    private function resetTerminal()
     {
-        $this->running = false;
-
         echo $this->clear_line;
         echo $this->blink_on;
     }
@@ -60,8 +49,8 @@ class Spinner
         // Then exit parent process using exit
 
         $keyboard_interrupts = function ($signo) {
-            $this->interrupt();
             posix_kill($this->child_pid, SIGTERM);
+            $this->resetTerminal();
             exit($signo);
         };
 
@@ -73,39 +62,39 @@ class Spinner
 
     public function callback(callable $callback)
     {
-
-        if (!extension_loaded('pcntl')) {
+        // Only start spinner if output is to STDOUT. 
+        // But not if output is redirected to a file
+        if (!extension_loaded('pcntl') || !posix_isatty(STDOUT)) {
+            
             $res = $callback();
             return $res;
         }
 
-        // Only start spinner if output is to STDOUT.not redirected to a file
-        if (posix_isatty(STDOUT)) {
-            return $this->runCallBack($callback);
-        }
+        return $this->runCallBack($callback);
 
-        $res = $callback();
-        return $res;
     }
 
     private function runCallBack(callable $callback)
     {
-        if ($this->use_keyboard_interrupts) {
-            $this->keyboardInterrupts();
-        }
 
         $child_pid = pcntl_fork();
         if ($child_pid == -1) {
             throw new Exception('Could not fork process');
         } else if ($child_pid) {
+
             // Parent process
+            if ($this->use_keyboard_interrupts) {
+                $this->keyboardInterrupts();
+            }
+
             $this->child_pid = $child_pid;
             $res = $callback();
-            $this->interrupt();
             posix_kill($this->child_pid, SIGTERM);
+            $this->resetTerminal();
             return $res;
         } else {
             // Child process
+            // Child pid is 0 here
             $this->start();
         }
     }

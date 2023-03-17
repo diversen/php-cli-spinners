@@ -14,6 +14,11 @@ On windows use WSL. There may be some trouble using UTF-8 characters in the term
 
 In this case you can use the `simpleDots` or `simpleDotsScrolling` spinner.
 
+## How it works
+
+The library will run a callback function in a separate process which displays the spinner. 
+The main process will run the callback function and return the result.
+
 ## Installation
 
 ```bash
