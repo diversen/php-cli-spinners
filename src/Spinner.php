@@ -25,7 +25,7 @@ class Spinner
         $this->spinner = $spinner_ary[$spinner];
     }
 
-    private function start()
+    private function loopSpinnerFrames()
     {
         echo $this->blink_off;
         while (true) {
@@ -95,7 +95,7 @@ class Spinner
         } else {
             // Child process
             // Child pid is 0 here
-            $this->start();
+            $this->loopSpinnerFrames();
         }
     }
 }
