@@ -18,7 +18,7 @@ class Spinner
     private $clear_line = "\33[2K\r";
     private $position_zero = "\r";
 
-    public function __construct(string $spinner = 'dots', bool $use_keyboard_interrupts = true)
+    public function __construct(string $spinner = 'simpleDots', bool $use_keyboard_interrupts = true)
     {
         $this->use_keyboard_interrupts = $use_keyboard_interrupts;
         $spinner_json = file_get_contents(__DIR__ . '/spinners.json');
@@ -79,7 +79,7 @@ class Spinner
             return $res;
         }
 
-        // Only start spinner if output is not redirected to a file
+        // Only start spinner if output is to STDOUT.not redirected to a file
         if (posix_isatty(STDOUT)) {
             return $this->runCallBack($callback);
         }
