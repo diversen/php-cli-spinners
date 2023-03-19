@@ -49,6 +49,7 @@ class Spinner
         // They are both running the same code
 
         $keyboard_interrupts = function ($signo) {
+            posix_kill($this->child_pid, SIGTERM);
             $this->resetTerminal();
             exit($signo);
         };
@@ -64,31 +65,28 @@ class Spinner
         // Only start spinner if output is to STDOUT. 
         // But not if output is redirected to a file
         if (!extension_loaded('pcntl') || !posix_isatty(STDOUT)) {
-            
             $res = $callback();
             return $res;
         }
-
         return $this->runCallBack($callback);
-
     }
 
     private function runCallBack(callable $callback)
     {
-
-        // Parent and child process
-        if ($this->use_keyboard_interrupts) {
-            $this->keyboardInterrupts();
-        }
 
         $child_pid = pcntl_fork();
         if ($child_pid == -1) {
             throw new Exception('Could not fork process');
         } else if ($child_pid) {
 
+            // Parent and child process
+            if ($this->use_keyboard_interrupts) {
+                $this->keyboardInterrupts();
+            }
+
             $this->child_pid = $child_pid;
             $res = $callback();
-            posix_kill($this->child_pid, SIGTERM);
+            posix_kill($child_pid, SIGTERM);
             $this->resetTerminal();
             return $res;
         } else {
