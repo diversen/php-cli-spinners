@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Diversen;
 
-use \Exception;
+use Exception;
 
 class Spinner
 {
@@ -73,13 +73,12 @@ class Spinner
 
     private function runCallBack(callable $callback)
     {
-
         $child_pid = pcntl_fork();
         if ($child_pid == -1) {
             throw new Exception('Could not fork process');
         } else if ($child_pid) {
 
-            // Parent and child process
+            // Parent process
             if ($this->use_keyboard_interrupts) {
                 $this->keyboardInterrupts();
             }
@@ -91,7 +90,6 @@ class Spinner
             return $res;
         } else {
             // Child process
-            // Child pid is 0 here
             $this->loopSpinnerFrames();
         }
     }
