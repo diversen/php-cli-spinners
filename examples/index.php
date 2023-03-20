@@ -1,8 +1,11 @@
 <?php
 
 
-for ($i = 0; $i < 100000; $i++) {
+sleep(5);
+for ($i = 0; $i < 100; $i++) {
     echo "Doing something important: " . $i . "\n";
-    sleep(1);
+    
+	
 }
-sleep(100);
+
+

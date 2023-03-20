@@ -12,8 +12,8 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 // If you make a blocking IO call in the callback function, then you may not be able to
 // Abort the spinner with ctrl-c.
 //
-// Start a php server in examples directory
-// php -S localhost:8000
+// Start a php server in base directory
+// php -S localhost:800 -t examples/
 // 
 // Curl example that will not block
 function request($url)
@@ -56,6 +56,7 @@ function request($url)
     return $result;
 }
 
+// Stream context example that will block
 function stream_context () {
 
     $context = stream_context_create([
@@ -79,15 +80,21 @@ function stream_context () {
 $spinner = new Spinner(spinner: 'dots');
 $res = $spinner->callback(function () {
 
-    // This will block
-    return stream_context();
-    
-    // This curl request will not block
+    // This will NOT block
     // try {
     //     return request('http://localhost:8000');
     // } catch (Exception $e) {
     //     return $e->getMessage();
     // }
+
+    // This will block. You can not escape using ctrl-c
+    try {
+        return stream_context();
+    } catch (Exception $e) {
+        return $e->getMessage();
+    }
+
+
 });
 
 echo $res . "\n";
