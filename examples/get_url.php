@@ -13,7 +13,7 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 // Abort the spinner with ctrl-c.
 //
 // Start a php server in base directory
-// php -S localhost:800 -t examples/
+// php -S localhost:8000 -t examples/
 // 
 // Curl example that will not block
 function request($url)
