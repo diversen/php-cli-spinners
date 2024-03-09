@@ -1,5 +1,9 @@
 <?php
 
+// Test blocking calls
+// E.g. if you make a blocking IO call in the callback function, then you may not be able to
+// Abort the spinner with ctrl-c.
+
 require_once "vendor/autoload.php";
 
 use Diversen\Spinner;
