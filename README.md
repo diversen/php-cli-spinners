@@ -34,14 +34,15 @@ require_once "vendor/autoload.php";
 
 use Diversen\Spinner;
 
-$spinner = new Spinner(spinner: 'dots');
+$spinner = new Spinner(spinner: 'simpleDots', message: "Loading");
 $res = $spinner->callback(function () {
-    // Do something important
     sleep(2);
     return 42;
 });
 
-echo $res . "\n";
+echo "$res\n"; // 42
+
+
 
 ```
 

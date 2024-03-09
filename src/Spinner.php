@@ -38,7 +38,7 @@ class Spinner
         }
     }
 
-    private function resetTerminal()
+    public function resetTerminal()
     {
         echo $this->clear_line;
         echo $this->blink_on;
@@ -80,18 +80,19 @@ class Spinner
             throw new Exception('Could not fork process');
         } else if ($child_pid) {
 
-            // Parent process
+            // This is the parent process
             if ($this->use_keyboard_interrupts) {
                 $this->keyboardInterrupts();
             }
-
+            
             $this->child_pid = $child_pid;
             $res = $callback();
             posix_kill($child_pid, SIGTERM);
             $this->resetTerminal();
             return $res;
         } else {
-            // Child process
+            
+            // This is the child process
             $this->loopSpinnerFrames();
         }
     }
