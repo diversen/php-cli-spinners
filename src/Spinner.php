@@ -16,15 +16,15 @@ class Spinner
     private $blink_on = "\e[?25h";
     private $clear_line = "\33[2K\r";
     private $return_to_left = "\r";
-    private ?string $message;
+    private string $message = '';
 
-    public function __construct(string $spinner = 'simpleDots', bool $use_keyboard_interrupts = true, ?string $message = null)
+    public function __construct(string $spinner = 'simpleDots', bool $use_keyboard_interrupts = true, string $message = '')
     {
         $this->use_keyboard_interrupts = $use_keyboard_interrupts;
         $spinner_json = file_get_contents(__DIR__ . '/spinners.json');
         $spinner_ary = json_decode($spinner_json, true);
         $this->spinner = $spinner_ary[$spinner];
-        $this->message = $message;
+        $this->message = ' ' . $message;
     }
 
     private function loopSpinnerFrames()
@@ -32,7 +32,7 @@ class Spinner
         echo $this->blink_off;
         while (true) {
             foreach ($this->spinner["frames"] as $frame) {
-                echo $frame. ($this->message ? ' ' . $this->message : '') . $this->return_to_left;
+                echo $frame . $this->message . $this->return_to_left;
                 usleep($this->spinner["interval"] * 1000);
             }
         }
